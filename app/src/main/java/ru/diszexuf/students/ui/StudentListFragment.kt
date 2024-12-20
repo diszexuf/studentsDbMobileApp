@@ -72,7 +72,6 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                         .observe(viewLifecycleOwner) { students ->
                             // Логируем студентов после фильтрации
                             Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-
                             studentAdapter.submitList(students) // Обновляем список студентов
                         }
                 }
@@ -81,7 +80,6 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                     studentViewModel.students.observe(viewLifecycleOwner) { students ->
                         // Логируем всех студентов
                         Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-
                         studentAdapter.submitList(students) // Если ничего не выбрано, показываем всех студентов
                     }
                 }
@@ -91,8 +89,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         // Наблюдаем за списком студентов (если фильтр по группе не активен)
         studentViewModel.students.observe(viewLifecycleOwner) { students ->
             // Логируем всех студентов
-            Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.id.toString() + " " + it.birthDate }}")
-
+            Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
             studentAdapter.submitList(students)  // Обновляем список студентов
         }
 
@@ -105,8 +102,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                 val query = charSequence.toString()
                 studentViewModel.searchByLastName(query).observe(viewLifecycleOwner) { students ->
                     // Логируем студентов после поиска по фамилии
-                    Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.birthDate + " " + it.id }}")
-
+                    Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
                     studentAdapter.submitList(students) // Обновляем список студентов по поисковому запросу
                 }
             }
@@ -147,3 +143,4 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         findNavController().navigate(action)
     }
 }
+

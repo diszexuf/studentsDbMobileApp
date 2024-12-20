@@ -35,7 +35,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
 
         // Получаем данные студента (если редактируем существующего)
         studentId = arguments?.getLong("studentId", 0) ?: 0
-        Log.d("EditStudentFragment", "Get studentId from parant ${studentId}")
+        Log.d("EditStudentFragment", "Get studentId from parent: $studentId")
         firstNameInput = view.findViewById(R.id.firstNameInput)
         lastNameInput = view.findViewById(R.id.lastNameInput)
         patronymicInput = view.findViewById(R.id.patronymicInput)
@@ -43,6 +43,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
         groupSpinner = view.findViewById(R.id.groupSpinner)
         saveButton = view.findViewById(R.id.saveButton)
 
+        // Наблюдаем за группами
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
             // Настроим Spinner для выбора группы
             val groupNames = groups.map { it.groupNumber }
@@ -53,16 +54,18 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
 
         // Если мы редактируем существующего студента, заполним поля данными
         if (studentId != 0L) {
-            // Загружаем данные студента и заполняем поля
-            studentViewModel.students.value?.find { it.id == studentId }?.let { student ->
-                firstNameInput.setText(student.firstName)
-                lastNameInput.setText(student.lastName)
-                patronymicInput.setText(student.patronymic)
-                birthDateInput.setText(student.birthDate)
+            studentViewModel.students.observe(viewLifecycleOwner) { students ->
+                val student = students.find { it.id == studentId }
+                if (student != null) {
+                    firstNameInput.setText(student.firstName)
+                    lastNameInput.setText(student.lastName)
+                    patronymicInput.setText(student.patronymic)
+                    birthDateInput.setText(student.birthDate)
 
-                // Найдем позицию группы в списке
-                val groupPosition = studentViewModel.groups.value?.indexOfFirst { it.id == student.groupId } ?: 0
-                groupSpinner.setSelection(groupPosition)
+                    // Найдем позицию группы в списке
+                    val groupPosition = studentViewModel.groups.value?.indexOfFirst { it.id == student.groupId } ?: 0
+                    groupSpinner.setSelection(groupPosition)
+                }
             }
         }
 
@@ -85,7 +88,10 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
             val args = Bundle().apply {
                 putLong("studentId", studentId)
             }
-            return EditStudentFragment().apply { arguments = args }
+            return EditStudentFragment().apply {
+                arguments = args
+            }
         }
     }
 }
+
