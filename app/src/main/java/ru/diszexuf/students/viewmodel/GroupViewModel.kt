@@ -17,32 +17,24 @@ class GroupViewModel @Inject constructor(
     private val studentRepository: StudentRepository
 ) : ViewModel() {
 
-    // LiveData для списка групп
     val groups: LiveData<List<Group>> = groupRepository.getAllGroups()
 
-    // MutableLiveData для ошибок
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> get() = _errorLiveData
 
-    // Добавление новой группы
     fun addGroup(group: Group) {
         viewModelScope.launch {
             groupRepository.insertGroup(group)
         }
     }
 
-    // Удаление группы с проверкой наличия студентов
     fun deleteGroup(group: Group) {
         viewModelScope.launch {
-            // Получаем список студентов из репозитория
             val studentsInGroup = studentRepository.getStudentsByGroup(group.id).value
 
-            // Проверяем, есть ли студенты в группе
             if (studentsInGroup.isNullOrEmpty()) {
-                // Если студентов нет, можем безопасно удалить группу
                 groupRepository.deleteGroup(group)
             } else {
-                // Если в группе есть студенты, уведомляем пользователя
                 _errorLiveData.value = "Невозможно удалить группу, пока в ней есть студенты"
             }
         }

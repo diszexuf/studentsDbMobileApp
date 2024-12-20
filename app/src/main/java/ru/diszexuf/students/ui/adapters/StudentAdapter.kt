@@ -34,12 +34,10 @@ class StudentAdapter(
             text2.text = student.patronymic
 
             itemView.setOnClickListener {
-                // Обработка клика на студента (редактирование)
                 onEditClick(student)
             }
 
             itemView.setOnLongClickListener {
-                // Обработка долгого клика на студента (удаление)
                 onDeleteClick(student)
                 true
             }

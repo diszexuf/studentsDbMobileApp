@@ -21,31 +21,26 @@ class StudentViewModel @Inject constructor(
 
     val groups: LiveData<List<Group>> = groupRepository.getAllGroups()
 
-    // Фильтрация студентов по группе
     fun filterByGroup(groupId: Long): LiveData<List<Student>> {
         return studentRepository.getStudentsByGroup(groupId)
     }
 
-    // Поиск студентов по фамилии
     fun searchByLastName(query: String): LiveData<List<Student>> {
         return studentRepository.searchStudentsByLastName(query)
     }
 
-    // Добавление нового студента
     fun addStudent(student: Student) {
         viewModelScope.launch {
             studentRepository.insertStudent(student)
         }
     }
 
-    // Редактирование студента
     fun updateStudent(student: Student) {
         viewModelScope.launch {
             studentRepository.updateStudent(student)
         }
     }
 
-    // Удаление студента
     fun deleteStudent(student: Student) {
         viewModelScope.launch {
             studentRepository.deleteStudent(student)

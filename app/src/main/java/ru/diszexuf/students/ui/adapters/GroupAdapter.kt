@@ -11,7 +11,7 @@ import ru.diszexuf.students.data.entities.Group
 
 class GroupAdapter(
     private val onDeleteClick: (Group) -> Unit,
-    private val onEditClick: (Group) -> Unit // Добавлен обработчик для редактирования
+    private val onEditClick: (Group) -> Unit
 ) : ListAdapter<Group, GroupAdapter.GroupViewHolder>(GroupDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
@@ -34,12 +34,10 @@ class GroupAdapter(
             text2.text = group.facultyName
 
             itemView.setOnClickListener {
-                // Обработка клика на группу (редактирование)
                 onEditClick(group)
             }
 
             itemView.setOnLongClickListener {
-                // Обработка долгого клика на группу (удаление)
                 onDeleteClick(group)
                 true
             }

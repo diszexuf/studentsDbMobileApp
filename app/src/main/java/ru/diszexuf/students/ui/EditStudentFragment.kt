@@ -28,12 +28,11 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
     private lateinit var groupSpinner: Spinner
     private lateinit var saveButton: Button
 
-    private lateinit var groupAdapter: ArrayAdapter<String>  // Адаптер для строк
+    private lateinit var groupAdapter: ArrayAdapter<String>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получаем данные студента (если редактируем существующего)
         studentId = arguments?.getLong("studentId", 0) ?: 0
         Log.d("EditStudentFragment", "Get studentId from parent: $studentId")
         firstNameInput = view.findViewById(R.id.firstNameInput)
@@ -43,16 +42,13 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
         groupSpinner = view.findViewById(R.id.groupSpinner)
         saveButton = view.findViewById(R.id.saveButton)
 
-        // Наблюдаем за группами
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
-            // Настроим Spinner для выбора группы
             val groupNames = groups.map { it.groupNumber }
             groupAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, groupNames)
             groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             groupSpinner.adapter = groupAdapter
         }
 
-        // Если мы редактируем существующего студента, заполним поля данными
         if (studentId != 0L) {
             studentViewModel.students.observe(viewLifecycleOwner) { students ->
                 val student = students.find { it.id == studentId }
@@ -62,14 +58,12 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
                     patronymicInput.setText(student.patronymic)
                     birthDateInput.setText(student.birthDate)
 
-                    // Найдем позицию группы в списке
                     val groupPosition = studentViewModel.groups.value?.indexOfFirst { it.id == student.groupId } ?: 0
                     groupSpinner.setSelection(groupPosition)
                 }
             }
         }
 
-        // Сохраняем изменения
         saveButton.setOnClickListener {
             val firstName = firstNameInput.text.toString()
             val lastName = lastNameInput.text.toString()
@@ -79,7 +73,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
 
             val updatedStudent = Student(studentId, firstName, lastName, patronymic, birthDate, groupId)
             studentViewModel.updateStudent(updatedStudent)
-            findNavController().popBackStack() // Закрываем фрагмент
+            findNavController().popBackStack()
         }
     }
 

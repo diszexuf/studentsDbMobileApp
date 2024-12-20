@@ -27,14 +27,12 @@ class EditGroupFragment : Fragment(R.layout.fragment_edit_group) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получаем ID группы из аргументов
         groupId = arguments?.getLong("groupId", 0L) ?: 0L
 
         groupNumberInput = view.findViewById(R.id.groupNumberInput)
         facultyNameInput = view.findViewById(R.id.facultyNameInput)
         saveButton = view.findViewById(R.id.saveButton)
 
-        // Наблюдаем за списком групп, чтобы заполнить данные при редактировании
         groupViewModel.groups.observe(viewLifecycleOwner) { groups ->
             val group = groups.find { it.id == groupId }
             group?.let {
@@ -53,8 +51,8 @@ class EditGroupFragment : Fragment(R.layout.fragment_edit_group) {
                     groupNumber = groupNumber,
                     facultyName = facultyName
                 )
-                groupViewModel.addGroup(updatedGroup) // Используем addGroup, так как Room заменяет записи с одинаковым ID
-                findNavController().popBackStack() // Возврат к списку групп
+                groupViewModel.addGroup(updatedGroup)
+                findNavController().popBackStack()
             } else {
                 Toast.makeText(requireContext(), "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
             }

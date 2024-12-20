@@ -28,38 +28,33 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
 
     private val studentViewModel: StudentViewModel by viewModels()
     private lateinit var studentAdapter: StudentAdapter
-    private lateinit var groupAdapter: ArrayAdapter<String>  // Адаптер для строк (номеров групп)
-    private lateinit var groupList: List<Group>  // Список групп
+    private lateinit var groupAdapter: ArrayAdapter<String>
+    private lateinit var groupList: List<Group>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Настраиваем RecyclerView
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewStudents)
         studentAdapter = StudentAdapter(
-            onDeleteClick = { student -> showDeleteStudentDialog(student) }, // Обработчик для удаления
-            onEditClick = { student -> navigateToEditStudent(student) } // Обработчик для редактирования
+            onDeleteClick = { student -> showDeleteStudentDialog(student) },
+            onEditClick = { student -> navigateToEditStudent(student) }
         )
         recyclerView.adapter = studentAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Настройка Spinner для фильтрации по группе
         val groupFilter = view.findViewById<Spinner>(R.id.groupFilter)
 
-        // Наблюдаем за группами
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
-            groupList = groups // Сохраняем список групп
+            groupList = groups
 
-            // Настроим адаптер для отображения номеров групп
             groupAdapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                groups.map { it.groupNumber } // Отображаем только номера групп
+                groups.map { it.groupNumber }
             )
             groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             groupFilter.adapter = groupAdapter
 
-            // Настроим обработчик выбора группы
             groupFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -67,20 +62,18 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                     position: Int,
                     id: Long
                 ) {
-                    val groupId = groupList[position].id // Получаем ID выбранной группы
+                    val groupId = groupList[position].id
                     studentViewModel.filterByGroup(groupId)
                         .observe(viewLifecycleOwner) { students ->
-                            // Логируем студентов после фильтрации
                             Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-                            studentAdapter.submitList(students) // Обновляем список студентов
+                            studentAdapter.submitList(students)
                         }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     studentViewModel.students.observe(viewLifecycleOwner) { students ->
-                        // Логируем всех студентов
                         Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-                        studentAdapter.submitList(students) // Если ничего не выбрано, показываем всех студентов
+                        studentAdapter.submitList(students)
                     }
                 }
             }
