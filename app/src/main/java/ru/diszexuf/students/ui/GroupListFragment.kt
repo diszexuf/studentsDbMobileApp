@@ -3,16 +3,18 @@ package ru.diszexuf.students.ui
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import ru.diszexuf.students.R
 import ru.diszexuf.students.data.entities.Group
+import ru.diszexuf.students.ui.adapters.GroupAdapter
 import ru.diszexuf.students.viewmodel.GroupViewModel
 import ru.diszexuf.students.viewmodel.StudentViewModel
 
@@ -28,13 +30,16 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
 
         // Настроим RecyclerView
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewGroups)
-        groupAdapter = GroupAdapter { group -> showDeleteGroupDialog(group) }
+        groupAdapter = GroupAdapter(
+            onDeleteClick = { group -> showDeleteGroupDialog(group) },
+            onEditClick = { group -> navigateToEditGroupFragment(group) } // Передача обработчика для редактирования
+        )
         recyclerView.adapter = groupAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Кнопка для добавления новой группы
-        val buttonAddGroup = view.findViewById<Button>(R.id.buttonAddGroup)
-        buttonAddGroup.setOnClickListener {
+        // Кнопка для добавления новой группы (используем FloatingActionButton)
+        val addGroupButton = view.findViewById<FloatingActionButton>(R.id.addGroupButton)
+        addGroupButton.setOnClickListener {
             showAddGroupDialog() // Диалог для добавления группы
         }
 
@@ -92,6 +97,12 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
                 Toast.makeText(requireContext(), "Невозможно удалить группу, в ней есть студенты", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // Навигация к фрагменту редактирования группы
+    private fun navigateToEditGroupFragment(group: Group) {
+        val action = GroupListFragmentDirections.actionGroupListFragmentToEditGroupFragment(group.id)
+        findNavController().navigate(action)
     }
 }
 

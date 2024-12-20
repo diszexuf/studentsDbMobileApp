@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import ru.diszexuf.students.data.entities.Student
 
 @Dao
@@ -22,7 +22,7 @@ interface StudentDao {
     @Insert
     suspend fun insertStudent(student: Student)
 
-    @Update
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateStudent(student: Student)
 
     @Delete

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.StudentsDB" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Базовая тема для приложения с AppCompat -->
+    <style name="Theme.StudentsDB" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Основные цвета -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+
+        <!-- Цвет фона окна -->
+        <item name="android:windowBackground">@color/white</item>
+
+        <!-- Цвет текста и других элементов -->
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
 </resources>

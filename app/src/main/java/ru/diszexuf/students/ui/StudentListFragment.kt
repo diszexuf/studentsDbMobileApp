@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,12 +12,15 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import ru.diszexuf.students.R
 import ru.diszexuf.students.data.entities.Group
 import ru.diszexuf.students.data.entities.Student
+import ru.diszexuf.students.ui.adapters.StudentAdapter
 import ru.diszexuf.students.viewmodel.StudentViewModel
 
 @AndroidEntryPoint
@@ -32,7 +36,10 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
 
         // Настраиваем RecyclerView
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewStudents)
-        studentAdapter = StudentAdapter { student -> showDeleteStudentDialog(student) } // Передаем обработчик для удаления
+        studentAdapter = StudentAdapter(
+            onDeleteClick = { student -> showDeleteStudentDialog(student) }, // Обработчик для удаления
+            onEditClick = { student -> navigateToEditStudent(student) } // Обработчик для редактирования
+        )
         recyclerView.adapter = studentAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -63,12 +70,18 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                     val groupId = groupList[position].id // Получаем ID выбранной группы
                     studentViewModel.filterByGroup(groupId)
                         .observe(viewLifecycleOwner) { students ->
+                            // Логируем студентов после фильтрации
+                            Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
+
                             studentAdapter.submitList(students) // Обновляем список студентов
                         }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     studentViewModel.students.observe(viewLifecycleOwner) { students ->
+                        // Логируем всех студентов
+                        Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
+
                         studentAdapter.submitList(students) // Если ничего не выбрано, показываем всех студентов
                     }
                 }
@@ -77,6 +90,9 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
 
         // Наблюдаем за списком студентов (если фильтр по группе не активен)
         studentViewModel.students.observe(viewLifecycleOwner) { students ->
+            // Логируем всех студентов
+            Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.id.toString() + " " + it.birthDate }}")
+
             studentAdapter.submitList(students)  // Обновляем список студентов
         }
 
@@ -88,12 +104,21 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = charSequence.toString()
                 studentViewModel.searchByLastName(query).observe(viewLifecycleOwner) { students ->
+                    // Логируем студентов после поиска по фамилии
+                    Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.birthDate + " " + it.id }}")
+
                     studentAdapter.submitList(students) // Обновляем список студентов по поисковому запросу
                 }
             }
 
             override fun afterTextChanged(editable: Editable?) {}
         })
+
+        // Обработчик нажатия на кнопку добавления студента
+        val addStudentButton = view.findViewById<FloatingActionButton>(R.id.addStudentButton)
+        addStudentButton.setOnClickListener {
+            navigateToEditStudentFragment(0L) // Открываем фрагмент редактирования с пустыми полями для нового студента
+        }
     }
 
     private fun showDeleteStudentDialog(student: Student) {
@@ -107,8 +132,18 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             .setNegativeButton("Отмена", null)
             .show()
     }
+
+    private fun navigateToEditStudent(student: Student) {
+        // Переход на экран редактирования студента
+        Log.d("StudentListFragment", "StudentID to edit ${student.id}")
+        val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(student.id)
+        findNavController().navigate(action)
+    }
+
+    private fun navigateToEditStudentFragment(studentId: Long) {
+        // Переход на экран добавления нового студента (с пустыми полями)
+        Log.d("StudentListFragment", "StudentID to edit ${studentId}")
+        val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(studentId)
+        findNavController().navigate(action)
+    }
 }
-
-
-
-

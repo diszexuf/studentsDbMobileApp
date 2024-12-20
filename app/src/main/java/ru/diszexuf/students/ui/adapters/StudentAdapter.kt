@@ -1,4 +1,4 @@
-package ru.diszexuf.students.ui
+package ru.diszexuf.students.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.diszexuf.students.data.entities.Student
 
 class StudentAdapter(
-    private val onDeleteClick: (Student) -> Unit, // Обработчик для удаления
-    private val onEditClick: (Student) -> Unit // Обработчик для редактирования
+    private val onDeleteClick: (Student) -> Unit,
+    private val onEditClick: (Student) -> Unit
 ) : ListAdapter<Student, StudentAdapter.StudentViewHolder>(StudentDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
@@ -33,14 +33,14 @@ class StudentAdapter(
             text1.text = "${student.firstName} ${student.lastName}"
             text2.text = student.patronymic
 
-            // Обработка клика на элемент для редактирования
             itemView.setOnClickListener {
-                onEditClick(student) // Передаем студента для редактирования
+                // Обработка клика на студента (редактирование)
+                onEditClick(student)
             }
 
-            // Добавляем кнопку удаления, которая будет вызывать onDeleteClick
             itemView.setOnLongClickListener {
-                onDeleteClick(student) // Передаем студента для удаления
+                // Обработка долгого клика на студента (удаление)
+                onDeleteClick(student)
                 true
             }
         }
@@ -56,6 +56,7 @@ class StudentDiffCallback : DiffUtil.ItemCallback<Student>() {
         return oldItem == newItem
     }
 }
+
 
 
 

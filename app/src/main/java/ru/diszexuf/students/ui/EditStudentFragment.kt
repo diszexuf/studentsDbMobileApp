@@ -1,6 +1,7 @@
 package ru.diszexuf.students.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -34,7 +35,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
 
         // Получаем данные студента (если редактируем существующего)
         studentId = arguments?.getLong("studentId", 0) ?: 0
-
+        Log.d("EditStudentFragment", "Get studentId from parant ${studentId}")
         firstNameInput = view.findViewById(R.id.firstNameInput)
         lastNameInput = view.findViewById(R.id.lastNameInput)
         patronymicInput = view.findViewById(R.id.patronymicInput)

@@ -1,6 +1,7 @@
 package ru.diszexuf.students.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,10 @@ class GroupViewModel @Inject constructor(
     // LiveData для списка групп
     val groups: LiveData<List<Group>> = groupRepository.getAllGroups()
 
+    // MutableLiveData для ошибок
+    private val _errorLiveData = MutableLiveData<String>()
+    val errorLiveData: LiveData<String> get() = _errorLiveData
+
     // Добавление новой группы
     fun addGroup(group: Group) {
         viewModelScope.launch {
@@ -26,10 +31,20 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    // Удаление группы с проверкой
+    // Удаление группы с проверкой наличия студентов
     fun deleteGroup(group: Group) {
         viewModelScope.launch {
-            groupRepository.deleteGroup(group)
+            // Получаем список студентов из репозитория
+            val studentsInGroup = studentRepository.getStudentsByGroup(group.id).value
+
+            // Проверяем, есть ли студенты в группе
+            if (studentsInGroup.isNullOrEmpty()) {
+                // Если студентов нет, можем безопасно удалить группу
+                groupRepository.deleteGroup(group)
+            } else {
+                // Если в группе есть студенты, уведомляем пользователя
+                _errorLiveData.value = "Невозможно удалить группу, пока в ней есть студенты"
+            }
         }
     }
 }

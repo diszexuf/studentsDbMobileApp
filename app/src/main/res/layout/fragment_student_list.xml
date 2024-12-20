@@ -1,25 +1,42 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <!-- Поле для поиска по фамилии -->
     <EditText
         android:id="@+id/searchField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Поиск по фамилии" />
+        android:hint="Поиск по фамилии"
+        android:layout_alignParentTop="true" />
 
     <!-- Spinner для выбора группы -->
     <Spinner
         android:id="@+id/groupFilter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchField" />
 
     <!-- RecyclerView для отображения списка студентов -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewStudents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@id/groupFilter"
+        android:layout_above="@id/addStudentButton" />
+
+    <!-- FloatingActionButton для добавления студента -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addStudentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:contentDescription="Добавить студента"
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/teal_700"
+        android:tint="@color/white" />
+</RelativeLayout>
+

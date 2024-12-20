@@ -1,42 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.navigation.NavGraph xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
     app:startDestination="@id/groupListFragment">
 
-    <!-- Фрагмент для списка групп -->
+    <!-- GroupListFragment -->
     <fragment
         android:id="@+id/groupListFragment"
         android:name="ru.diszexuf.students.ui.GroupListFragment"
-        android:label="Список групп"
+        android:label="Group List"
         tools:layout="@layout/fragment_group_list">
-        <!-- Навигация для добавления новой группы -->
         <action
-            android:id="@+id/action_groupListFragment_to_addGroupFragment"
-            app:destination="@id/addGroupFragment" />
-        <!-- Навигация к студентам для выбранной группы -->
+            android:id="@+id/action_groupListFragment_to_editGroupFragment"
+            app:destination="@id/editGroupFragment" />
         <action
             android:id="@+id/action_groupListFragment_to_studentListFragment"
             app:destination="@id/studentListFragment" />
     </fragment>
 
-    <!-- Фрагмент для списка студентов -->
+    <!-- EditGroupFragment -->
+    <fragment
+        android:id="@+id/editGroupFragment"
+        android:name="ru.diszexuf.students.ui.EditGroupFragment"
+        android:label="Edit Group"
+        tools:layout="@layout/fragment_edit_group">
+        <argument
+            android:name="groupId"
+            app:argType="long" />
+    </fragment>
+
+    <!-- StudentListFragment -->
     <fragment
         android:id="@+id/studentListFragment"
         android:name="ru.diszexuf.students.ui.StudentListFragment"
-        android:label="Список студентов"
+        android:label="Student List"
         tools:layout="@layout/fragment_student_list">
-        <!-- Навигация обратно к списку групп -->
         <action
-            android:id="@+id/action_studentListFragment_to_groupListFragment"
-            app:destination="@id/groupListFragment" />
+            android:id="@+id/action_studentListFragment_to_editStudentFragment"
+            app:destination="@id/editStudentFragment" />
     </fragment>
 
-    <!-- Фрагмент для добавления новой группы -->
+    <!-- EditStudentFragment -->
     <fragment
-        android:id="@+id/addGroupFragment"
-        android:name="ru.diszexuf.students.ui.AddGroupFragment"
-        android:label="Добавить группу"
-        tools:layout="@layout/fragment_add_group" />
-</androidx.navigation.NavGraph>
+        android:id="@+id/editStudentFragment"
+        android:name="ru.diszexuf.students.ui.EditStudentFragment"
+        android:label="Edit Student"
+        tools:layout="@layout/fragment_edit_student">
+        <argument
+            android:name="studentId"
+            app:argType="long" />
+    </fragment>
+
+</navigation>
