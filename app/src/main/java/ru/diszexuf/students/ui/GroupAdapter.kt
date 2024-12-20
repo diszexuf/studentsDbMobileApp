@@ -1,48 +1,53 @@
 package ru.diszexuf.students.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.diszexuf.students.databinding.ItemGroupBinding
-
-data class GroupItem(
-    val id: Long,
-    val groupNumber: String,
-    val facultyName: String
-)
+import ru.diszexuf.students.data.entities.Group
 
 class GroupAdapter(
-    private val onGroupClick: (GroupItem) -> Unit,
-    private val onDeleteClick: (GroupItem) -> Unit
-) : ListAdapter<GroupItem, GroupAdapter.GroupViewHolder>(GroupDiffCallback()) {
+    private val onDeleteClick: (Group) -> Unit
+) : ListAdapter<Group, GroupAdapter.GroupViewHolder>(GroupDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val binding = ItemGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return GroupViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(android.R.layout.simple_list_item_2, parent, false)
+        return GroupViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val group = getItem(position)
-        holder.bind(group, onGroupClick, onDeleteClick)
+        holder.bind(group)
     }
 
-    class GroupViewHolder(private val binding: ItemGroupBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            group: GroupItem,
-            onGroupClick: (GroupItem) -> Unit,
-            onDeleteClick: (GroupItem) -> Unit
-        ) {
-            binding.groupNumber.text = group.groupNumber
-            binding.facultyName.text = group.facultyName
-            binding.root.setOnClickListener { onGroupClick(group) }
-            binding.deleteButton.setOnClickListener { onDeleteClick(group) }
+    inner class GroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val text1: TextView = itemView.findViewById(android.R.id.text1)
+        private val text2: TextView = itemView.findViewById(android.R.id.text2)
+
+        fun bind(group: Group) {
+            text1.text = group.groupNumber
+            text2.text = group.facultyName
+
+            itemView.setOnLongClickListener {
+                onDeleteClick(group)
+                true
+            }
         }
     }
 }
 
-class GroupDiffCallback : DiffUtil.ItemCallback<GroupItem>() {
-    override fun areItemsTheSame(oldItem: GroupItem, newItem: GroupItem): Boolean = oldItem.id == newItem.id
-    override fun areContentsTheSame(oldItem: GroupItem, newItem: GroupItem): Boolean = oldItem == newItem
+class GroupDiffCallback : DiffUtil.ItemCallback<Group>() {
+    override fun areItemsTheSame(oldItem: Group, newItem: Group): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Group, newItem: Group): Boolean {
+        return oldItem == newItem
+    }
 }
+
+

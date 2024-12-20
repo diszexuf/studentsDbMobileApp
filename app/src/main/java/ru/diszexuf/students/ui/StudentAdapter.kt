@@ -1,50 +1,61 @@
 package ru.diszexuf.students.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.diszexuf.students.databinding.ItemStudentBinding
-
-data class StudentItem(
-    val id: Long,
-    val fullName: String, // Формат: "Фамилия Имя Отчество"
-    val birthDate: String,
-    val groupNumber: String
-)
+import ru.diszexuf.students.data.entities.Student
 
 class StudentAdapter(
-    private val onStudentClick: (StudentItem) -> Unit,
-    private val onDeleteClick: (StudentItem) -> Unit
-) : ListAdapter<StudentItem, StudentAdapter.StudentViewHolder>(StudentDiffCallback()) {
+    private val onDeleteClick: (Student) -> Unit, // Обработчик для удаления
+    private val onEditClick: (Student) -> Unit // Обработчик для редактирования
+) : ListAdapter<Student, StudentAdapter.StudentViewHolder>(StudentDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        val binding = ItemStudentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StudentViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(android.R.layout.simple_list_item_2, parent, false)
+        return StudentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
         val student = getItem(position)
-        holder.bind(student, onStudentClick, onDeleteClick)
+        holder.bind(student)
     }
 
-    class StudentViewHolder(private val binding: ItemStudentBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            student: StudentItem,
-            onStudentClick: (StudentItem) -> Unit,
-            onDeleteClick: (StudentItem) -> Unit
-        ) {
-            binding.fullName.text = student.fullName
-            binding.birthDate.text = student.birthDate
-            binding.groupNumber.text = student.groupNumber
-            binding.root.setOnClickListener { onStudentClick(student) }
-            binding.deleteButton.setOnClickListener { onDeleteClick(student) }
+    inner class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val text1: TextView = itemView.findViewById(android.R.id.text1)
+        private val text2: TextView = itemView.findViewById(android.R.id.text2)
+
+        fun bind(student: Student) {
+            text1.text = "${student.firstName} ${student.lastName}"
+            text2.text = student.patronymic
+
+            // Обработка клика на элемент для редактирования
+            itemView.setOnClickListener {
+                onEditClick(student) // Передаем студента для редактирования
+            }
+
+            // Добавляем кнопку удаления, которая будет вызывать onDeleteClick
+            itemView.setOnLongClickListener {
+                onDeleteClick(student) // Передаем студента для удаления
+                true
+            }
         }
     }
 }
 
-class StudentDiffCallback : DiffUtil.ItemCallback<StudentItem>() {
-    override fun areItemsTheSame(oldItem: StudentItem, newItem: StudentItem): Boolean = oldItem.id == newItem.id
-    override fun areContentsTheSame(oldItem: StudentItem, newItem: StudentItem): Boolean = oldItem == newItem
+class StudentDiffCallback : DiffUtil.ItemCallback<Student>() {
+    override fun areItemsTheSame(oldItem: Student, newItem: Student): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Student, newItem: Student): Boolean {
+        return oldItem == newItem
+    }
 }
+
+
+

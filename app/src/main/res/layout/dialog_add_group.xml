@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextGroupNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Номер группы"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editTextFacultyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Название факультета"
+        android:inputType="text" />
+
+</LinearLayout>

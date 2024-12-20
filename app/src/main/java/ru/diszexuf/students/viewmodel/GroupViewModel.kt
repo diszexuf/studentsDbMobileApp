@@ -1,48 +1,35 @@
 package ru.diszexuf.students.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.diszexuf.students.data.entities.Group
 import ru.diszexuf.students.data.repository.GroupRepository
+import ru.diszexuf.students.data.repository.StudentRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    private val repository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val studentRepository: StudentRepository
 ) : ViewModel() {
 
-    private val _groups = MutableStateFlow<List<Group>>(emptyList())
-    val groups: StateFlow<List<Group>> = _groups.asStateFlow()
+    // LiveData для списка групп
+    val groups: LiveData<List<Group>> = groupRepository.getAllGroups()
 
-    fun loadGroups() {
-        viewModelScope.launch {
-            _groups.value = repository.getAllGroups()
-        }
-    }
-
+    // Добавление новой группы
     fun addGroup(group: Group) {
         viewModelScope.launch {
-            repository.insertGroup(group)
-            loadGroups()
+            groupRepository.insertGroup(group)
         }
     }
 
-    fun updateGroup(group: Group) {
-        viewModelScope.launch {
-            repository.updateGroup(group)
-            loadGroups()
-        }
-    }
-
+    // Удаление группы с проверкой
     fun deleteGroup(group: Group) {
         viewModelScope.launch {
-            repository.deleteGroup(group)
-            loadGroups()
+            groupRepository.deleteGroup(group)
         }
     }
 }

@@ -1,5 +1,6 @@
 package ru.diszexuf.students.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -10,7 +11,7 @@ import ru.diszexuf.students.data.entities.Group
 @Dao
 interface GroupDao {
     @Query("SELECT * FROM groups")
-    fun getAllGroups(): List<Group>
+    fun getAllGroups(): LiveData<List<Group>>
 
     @Insert
     suspend fun insertGroup(group: Group)

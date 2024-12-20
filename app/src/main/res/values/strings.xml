@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">StudentsDB</string>
+    <string name="delete_student">Delete Student</string>
+
+    <string name="delete_group">Delete Group</string>
+
+    <string name="add_student">Add Student</string>
+    <string name="add_group">Add Group</string>
+
+    <string name="app_name">Student Database</string>
 </resources>
