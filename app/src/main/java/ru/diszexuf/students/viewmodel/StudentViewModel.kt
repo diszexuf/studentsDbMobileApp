@@ -1,46 +1,60 @@
 package ru.diszexuf.students.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.diszexuf.students.data.AppDatabase
 import ru.diszexuf.students.data.entities.Student
 import ru.diszexuf.students.data.repository.StudentRepository
+import javax.inject.Inject
 
-class StudentViewModel(application: Application) : AndroidViewModel(application) {
-
+@HiltViewModel
+class StudentViewModel @Inject constructor(
     private val repository: StudentRepository
+) : ViewModel() {
 
-    init {
-        val studentDao = AppDatabase.getDatabase(application).studentDao()
-        repository = StudentRepository(studentDao)
+    private val _students = MutableStateFlow<List<Student>>(emptyList())
+    val students: StateFlow<List<Student>> = _students.asStateFlow()
+
+    fun loadStudents() {
+        viewModelScope.launch {
+            _students.value = repository.getAllStudents()
+        }
     }
 
-    fun getStudentsByGroup(groupId: Int): LiveData<List<Student>> {
-        return repository.getStudentByGroup(groupId)
+    fun filterStudentsByGroup(groupId: Long) {
+        viewModelScope.launch {
+            _students.value = repository.getStudentsByGroup(groupId)
+        }
     }
 
-    fun getStudentsByLastName(lastName: String): LiveData<List<Student>> {
-        return repository.getStudentByLastName(lastName)
+    fun searchStudentsByLastName(query: String) {
+        viewModelScope.launch {
+            _students.value = repository.searchStudentsByLastName(query)
+        }
     }
 
     fun addStudent(student: Student) {
         viewModelScope.launch {
-            repository.insert(student)
+            repository.insertStudent(student)
+            loadStudents()
         }
     }
 
     fun updateStudent(student: Student) {
         viewModelScope.launch {
-            repository.update(student)
+            repository.updateStudent(student)
+            loadStudents()
         }
     }
 
     fun deleteStudent(student: Student) {
         viewModelScope.launch {
-            repository.delete(student)
+            repository.deleteStudent(student)
+            loadStudents()
         }
     }
 }

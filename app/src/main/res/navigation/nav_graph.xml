@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/fragmentGroupList">
+
+    <!-- Список групп -->
+    <fragment
+        android:id="@+id/fragmentGroupList"
+        android:name="ru.diszexuf.students.ui.group.FragmentGroupList"
+        android:label="Group List">
+        <action
+            android:id="@+id/action_groupList_to_editGroup"
+            app:destination="@id/fragmentEditGroup" />
+        <action
+            android:id="@+id/action_groupList_to_studentList"
+            app:destination="@id/fragmentStudentList" />
+    </fragment>
+
+    <!-- Список студентов -->
+    <fragment
+        android:id="@+id/fragmentStudentList"
+        android:name="ru.diszexuf.students.ui.student.FragmentStudentList"
+        android:label="Student List">
+        <action
+            android:id="@+id/action_studentList_to_editStudent"
+            app:destination="@id/fragmentEditStudent" />
+    </fragment>
+
+    <!-- Редактирование группы -->
+    <fragment
+        android:id="@+id/fragmentEditGroup"
+        android:name="ru.diszexuf.students.ui.group.FragmentEditGroup"
+        android:label="Edit Group">
+        <argument
+            android:name="group"
+            app:argType="com.example.app.models.Group"
+            android:nullable="true" />
+    </fragment>
+
+    <!-- Редактирование студента -->
+    <fragment
+        android:id="@+id/fragmentEditStudent"
+        android:name="ru.diszexuf.students.ui.student.FragmentEditStudent"
+        android:label="Edit Student">
+        <argument
+            android:name="student"
+            app:argType="com.example.app.models.Student"
+            android:nullable="true" />
+    </fragment>
+
+</navigation>

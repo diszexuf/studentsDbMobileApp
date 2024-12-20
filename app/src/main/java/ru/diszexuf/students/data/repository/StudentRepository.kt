@@ -1,31 +1,21 @@
 package ru.diszexuf.students.data.repository
 
-import androidx.lifecycle.LiveData
-import ru.diszexuf.students.data.dao.GroupDao
 import ru.diszexuf.students.data.dao.StudentDao
-import ru.diszexuf.students.data.entities.Group
 import ru.diszexuf.students.data.entities.Student
+import javax.inject.Inject
 
-class StudentRepository(private val studentDao: StudentDao) {
+class StudentRepository @Inject constructor(
+    private val studentDao: StudentDao
+) {
+    fun getAllStudents() = studentDao.getAllStudents()
 
-    fun getStudentByGroup(groupId: Int): LiveData<List<Student>> {
-        return studentDao.getStudentsByGroup(groupId)
-    }
+    fun getStudentsByGroup(groupId: Long) = studentDao.getStudentsByGroup(groupId)
 
-    fun getStudentByLastName(lastName: String): LiveData<List<Student>> {
-        return studentDao.getStudentsByLastName(lastName)
-    }
+    fun searchStudentsByLastName(query: String) = studentDao.searchStudentsByLastName(query)
 
-    suspend fun insert(student: Student) {
-        studentDao.insertStudent(student)
-    }
+    suspend fun insertStudent(student: Student) = studentDao.insertStudent(student)
 
-    suspend fun update(student: Student) {
-        studentDao.updateStudent(student)
-    }
+    suspend fun updateStudent(student: Student) = studentDao.updateStudent(student)
 
-    suspend fun delete(student: Student) {
-        studentDao.deleteStudent(student)
-    }
-
+    suspend fun deleteStudent(student: Student) = studentDao.deleteStudent(student)
 }

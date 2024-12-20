@@ -1,46 +1,48 @@
 package ru.diszexuf.students.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.diszexuf.students.data.AppDatabase
 import ru.diszexuf.students.data.entities.Group
 import ru.diszexuf.students.data.repository.GroupRepository
+import javax.inject.Inject
 
-class GroupViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class GroupViewModel @Inject constructor(
     private val repository: GroupRepository
-    val allGroups: LiveData<List<Group>>
+) : ViewModel() {
 
-    init {
-        val groupDao = AppDatabase.getDatabase(application).groupDao()
-        repository = GroupRepository(groupDao)
-        allGroups = repository.allGroups
+    private val _groups = MutableStateFlow<List<Group>>(emptyList())
+    val groups: StateFlow<List<Group>> = _groups.asStateFlow()
+
+    fun loadGroups() {
+        viewModelScope.launch {
+            _groups.value = repository.getAllGroups()
+        }
     }
 
     fun addGroup(group: Group) {
         viewModelScope.launch {
-            repository.insert(group)
+            repository.insertGroup(group)
+            loadGroups()
         }
     }
 
     fun updateGroup(group: Group) {
         viewModelScope.launch {
-            repository.update(group)
+            repository.updateGroup(group)
+            loadGroups()
         }
     }
 
     fun deleteGroup(group: Group) {
         viewModelScope.launch {
-            repository.delete(group)
+            repository.deleteGroup(group)
+            loadGroups()
         }
     }
-
-    fun getGroupById(groupId: Int) {
-        viewModelScope.launch {
-            repository.getGroupById(groupId)
-        }
-    }
-
 }

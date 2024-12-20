@@ -1,6 +1,8 @@
 package ru.diszexuf.students.data.entities
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "students",
@@ -14,10 +16,10 @@ import androidx.room.*
     ]
 )
 data class Student(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val firstName: String,
     val lastName: String,
     val patronymic: String,
     val birthDate: String,
-    @ColumnInfo(name = "groupId") val groupId: Int
+    val groupId: Long
 )

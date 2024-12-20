@@ -1,11 +1,17 @@
 package ru.diszexuf.students.data.dao
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import ru.diszexuf.students.data.entities.Group
 
 @Dao
 interface GroupDao {
+    @Query("SELECT * FROM groups")
+    fun getAllGroups(): List<Group>
+
     @Insert
     suspend fun insertGroup(group: Group)
 
@@ -14,11 +20,4 @@ interface GroupDao {
 
     @Delete
     suspend fun deleteGroup(group: Group)
-
-    @Query("SELECT * FROM groups")
-    fun getAllGroups(): LiveData<List<Group>>
-
-    @Query("SELECT * FROM groups WHERE id = :groupId")
-    fun getGroupById(groupId: Int): LiveData<Group>
-
 }
