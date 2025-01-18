@@ -3,6 +3,7 @@ package ru.diszexuf.students.ui
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -30,6 +31,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
     private lateinit var studentAdapter: StudentAdapter
     private lateinit var groupAdapter: ArrayAdapter<String>
     private lateinit var groupList: List<Group>
+    private var currentGroupId: Long = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,8 +64,8 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                     position: Int,
                     id: Long
                 ) {
-                    val groupId = groupList[position].id
-                    studentViewModel.filterByGroup(groupId)
+                    currentGroupId = groupList[position].id  // Сохраняем текущую выбранную группу
+                    studentViewModel.filterByGroup(currentGroupId)
                         .observe(viewLifecycleOwner) { students ->
                             Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
                             studentAdapter.submitList(students)
@@ -79,61 +81,73 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             }
         }
 
-        // Наблюдаем за списком студентов (если фильтр по группе не активен)
         studentViewModel.students.observe(viewLifecycleOwner) { students ->
-            // Логируем всех студентов
             Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-            studentAdapter.submitList(students)  // Обновляем список студентов
+            studentAdapter.submitList(students)
         }
 
-        // Поиск студентов по фамилии
         val searchField = view.findViewById<EditText>(R.id.searchField)
+
+        searchField.filters = arrayOf(
+            InputFilter { source, start, end, dest, dstart, dend ->
+                if (source.matches("[a-zA-Zа-яА-Я]+".toRegex())) {
+                    null
+                } else {
+                    ""
+                }
+            }
+        )
+
         searchField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = charSequence.toString()
-                studentViewModel.searchByLastName(query).observe(viewLifecycleOwner) { students ->
-                    // Логируем студентов после поиска по фамилии
-                    Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-                    studentAdapter.submitList(students) // Обновляем список студентов по поисковому запросу
+
+                if (query.isEmpty()) {
+                    studentViewModel.filterByGroup(currentGroupId)
+                        .observe(viewLifecycleOwner) { students ->
+                            studentAdapter.submitList(students)
+                        }
+                } else {
+                    studentViewModel.searchByLastName(query).observe(viewLifecycleOwner) { students ->
+                        Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
+                        studentAdapter.submitList(students)
+                    }
                 }
             }
 
             override fun afterTextChanged(editable: Editable?) {}
         })
 
-        // Обработчик нажатия на кнопку добавления студента
         val addStudentButton = view.findViewById<FloatingActionButton>(R.id.addStudentButton)
         addStudentButton.setOnClickListener {
-            navigateToEditStudentFragment(0L) // Открываем фрагмент редактирования с пустыми полями для нового студента
+            navigateToEditStudentFragment(0L)
         }
     }
 
     private fun showDeleteStudentDialog(student: Student) {
-        // Покажите диалог подтверждения удаления студента
         AlertDialog.Builder(requireContext())
             .setTitle("Удалить студента?")
             .setMessage("Вы уверены, что хотите удалить ${student.firstName} ${student.lastName}?")
             .setPositiveButton("Удалить") { _, _ ->
-                studentViewModel.deleteStudent(student) // Удаляем студента
+                studentViewModel.deleteStudent(student)
             }
             .setNegativeButton("Отмена", null)
             .show()
     }
 
     private fun navigateToEditStudent(student: Student) {
-        // Переход на экран редактирования студента
         Log.d("StudentListFragment", "StudentID to edit ${student.id}")
         val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(student.id)
         findNavController().navigate(action)
     }
 
     private fun navigateToEditStudentFragment(studentId: Long) {
-        // Переход на экран добавления нового студента (с пустыми полями)
         Log.d("StudentListFragment", "StudentID to edit ${studentId}")
         val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(studentId)
         findNavController().navigate(action)
     }
 }
+
 

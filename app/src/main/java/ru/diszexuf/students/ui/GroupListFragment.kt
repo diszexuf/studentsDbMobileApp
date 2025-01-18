@@ -2,6 +2,7 @@ package ru.diszexuf.students.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -51,6 +52,16 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
 
         val editTextGroupNumber = dialogView.findViewById<EditText>(R.id.editTextGroupNumber)
         val editTextFacultyName = dialogView.findViewById<EditText>(R.id.editTextFacultyName)
+
+        editTextFacultyName.filters = arrayOf(
+            InputFilter { source, start, end, dest, dstart, dend ->
+                if (source.matches("[a-zA-Zа-яА-Я]+".toRegex())) {
+                    null
+                } else {
+                    ""
+                }
+            }
+        )
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Добавить группу")

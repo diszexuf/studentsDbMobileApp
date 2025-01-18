@@ -1,6 +1,7 @@
 package ru.diszexuf.students.ui
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -33,6 +34,16 @@ class EditGroupFragment : Fragment(R.layout.fragment_edit_group) {
         facultyNameInput = view.findViewById(R.id.facultyNameInput)
         saveButton = view.findViewById(R.id.saveButton)
 
+        facultyNameInput.filters = arrayOf(
+            InputFilter { source, start, end, dest, dstart, dend ->
+                if (source.matches("[a-zA-Zа-яА-Я]+".toRegex())) {
+                    null
+                } else {
+                    ""
+                }
+            }
+        )
+
         groupViewModel.groups.observe(viewLifecycleOwner) { groups ->
             val group = groups.find { it.id == groupId }
             group?.let {
@@ -58,6 +69,7 @@ class EditGroupFragment : Fragment(R.layout.fragment_edit_group) {
             }
         }
     }
+
 
     companion object {
         fun newInstance(groupId: Long): EditGroupFragment {
