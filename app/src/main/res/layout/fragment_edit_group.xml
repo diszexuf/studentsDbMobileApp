@@ -10,13 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Номер группы"
-        android:inputType="text" />
+        android:maxLength="5"
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/facultyNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Название факультета"
+        android:maxLength="30"
         android:inputType="text" />
 
     <Button

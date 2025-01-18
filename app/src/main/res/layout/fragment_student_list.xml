@@ -1,5 +1,7 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,34 +11,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Поиск по фамилии"
-        android:layout_alignParentTop="true" />
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLength="20"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Spinner для выбора группы -->
-    <Spinner
-        android:id="@+id/groupFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/searchField" />
 
     <!-- RecyclerView для отображения списка студентов -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewStudents"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/groupFilter"
-        android:layout_above="@id/addStudentButton" />
 
     <!-- FloatingActionButton для добавления студента -->
+
+    <Spinner
+        android:id="@+id/groupFilter"
+        android:layout_width="339dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchField" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewStudents"
+        android:layout_width="402dp"
+        android:layout_height="561dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toTopOf="@id/addStudentButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groupFilter"
+        app:layout_constraintVertical_bias="0.0" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addStudentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/teal_700"
         android:contentDescription="Добавить студента"
         android:src="@android:drawable/ic_input_add"
-        android:backgroundTint="@color/teal_700"
-        android:tint="@color/white" />
-</RelativeLayout>
+        android:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/group_filter_text"
+        android:layout_width="71dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="44dp"
+        android:gravity="center"
+        android:text="Группа:"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/groupFilter"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 

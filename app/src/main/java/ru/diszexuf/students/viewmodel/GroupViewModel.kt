@@ -20,11 +20,17 @@ class GroupViewModel @Inject constructor(
     val groups: LiveData<List<Group>> = groupRepository.getAllGroups()
 
     private val _errorLiveData = MutableLiveData<String>()
-    val errorLiveData: LiveData<String> get() = _errorLiveData
+//    val errorLiveData: LiveData<String> get() = _errorLiveData
 
     fun addGroup(group: Group) {
         viewModelScope.launch {
             groupRepository.insertGroup(group)
+        }
+    }
+
+    fun updateGroup(group: Group) {
+        viewModelScope.launch {
+            groupRepository.updateGroup(group)
         }
     }
 

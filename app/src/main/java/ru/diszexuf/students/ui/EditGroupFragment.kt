@@ -51,7 +51,7 @@ class EditGroupFragment : Fragment(R.layout.fragment_edit_group) {
                     groupNumber = groupNumber,
                     facultyName = facultyName
                 )
-                groupViewModel.addGroup(updatedGroup)
+                groupViewModel.updateGroup(updatedGroup)
                 findNavController().popBackStack()
             } else {
                 Toast.makeText(requireContext(), "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
