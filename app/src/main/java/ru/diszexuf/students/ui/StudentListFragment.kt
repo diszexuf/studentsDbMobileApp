@@ -48,7 +48,6 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
 
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
             groupList = groups
-
             groupAdapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -64,19 +63,13 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                     position: Int,
                     id: Long
                 ) {
-                    currentGroupId = groupList[position].id  // Сохраняем текущую выбранную группу
-                    studentViewModel.filterByGroup(currentGroupId)
-                        .observe(viewLifecycleOwner) { students ->
-                            Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-                            studentAdapter.submitList(students)
-                        }
+                    currentGroupId = groupList[position].id
+                    updateStudentList()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    studentViewModel.students.observe(viewLifecycleOwner) { students ->
-                        Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
-                        studentAdapter.submitList(students)
-                    }
+                    currentGroupId = 0L
+                    updateStudentList()
                 }
             }
         }
@@ -105,10 +98,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
                 val query = charSequence.toString()
 
                 if (query.isEmpty()) {
-                    studentViewModel.filterByGroup(currentGroupId)
-                        .observe(viewLifecycleOwner) { students ->
-                            studentAdapter.submitList(students)
-                        }
+                    updateStudentList()
                 } else {
                     studentViewModel.searchByLastName(query).observe(viewLifecycleOwner) { students ->
                         Log.d("StudentListFragment", "Searched students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
@@ -123,6 +113,20 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         val addStudentButton = view.findViewById<FloatingActionButton>(R.id.addStudentButton)
         addStudentButton.setOnClickListener {
             navigateToEditStudentFragment(0L)
+        }
+    }
+
+    private fun updateStudentList() {
+        if (currentGroupId != 0L) {
+            studentViewModel.filterByGroup(currentGroupId).observe(viewLifecycleOwner) { students ->
+                Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
+                studentAdapter.submitList(students)
+            }
+        } else {
+            studentViewModel.students.observe(viewLifecycleOwner) { students ->
+                Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
+                studentAdapter.submitList(students)
+            }
         }
     }
 
@@ -149,5 +153,3 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         findNavController().navigate(action)
     }
 }
-
-
