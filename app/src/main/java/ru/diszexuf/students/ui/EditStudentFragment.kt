@@ -23,8 +23,8 @@ import java.util.Locale
 @AndroidEntryPoint
 class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
 
-    private val studentViewModel: StudentViewModel by viewModels()
-    private var studentId: Long = 0
+    private val studentViewModel: StudentViewModel by viewModels() // viewmodel для работы со студентами
+    private var studentId: Long = 0 // id студента для редактирования
 
     private lateinit var firstNameInput: TextView
     private lateinit var lastNameInput: TextView
@@ -33,7 +33,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
     private lateinit var groupSpinner: Spinner
     private lateinit var saveButton: Button
 
-    private lateinit var groupAdapter: ArrayAdapter<String>
+    private lateinit var groupAdapter: ArrayAdapter<String> // адаптер для спиннера групп
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,6 +47,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
         groupSpinner = view.findViewById(R.id.groupSpinner)
         saveButton = view.findViewById(R.id.saveButton)
 
+        // фильтр для полей ввода, разрешающий только буквы
         val letterFilter = InputFilter { source, _, _, _, _, _ ->
             if (source.matches("[a-zA-Zа-яА-ЯёЁ]+".toRegex())) {
                 null
@@ -59,10 +60,12 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
         lastNameInput.filters = arrayOf(letterFilter)
         patronymicInput.filters = arrayOf(letterFilter)
 
+        // обработка нажатия на поле ввода для даты рождения
         birthDateInput.setOnClickListener {
             showDatePickerDialog()
         }
 
+        // наблюдение за изменениями в списке групп
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
             val groupNames = groups.map { it.groupNumber }
             groupAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, groupNames)
@@ -70,6 +73,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
             groupSpinner.adapter = groupAdapter
         }
 
+        // если редактируется существующий студент
         if (studentId != 0L) {
             studentViewModel.students.observe(viewLifecycleOwner) { students ->
                 val student = students.find { it.id == studentId }
@@ -79,12 +83,13 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
                     patronymicInput.text = student.patronymic
                     birthDateInput.text = student.birthDate
 
-                    val groupPosition = studentViewModel.groups.value?.indexOfFirst { it.id == student.groupId } ?: 0
+                    val groupPosition = studentViewModel.groups.value?.indexOfFirst { it.id == student.groupId } ?: 0 // поиск позиции группы
                     groupSpinner.setSelection(groupPosition)
                 }
             }
         }
 
+        // обработка нажатия на кнопку сохранения
         saveButton.setOnClickListener {
             val firstName = firstNameInput.text.toString()
             val lastName = lastNameInput.text.toString()
@@ -93,11 +98,12 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
             val groupId = studentViewModel.groups.value?.get(groupSpinner.selectedItemPosition)?.id ?: 0
 
             val updatedStudent = Student(studentId, firstName, lastName, patronymic, birthDate, groupId)
-            studentViewModel.updateStudent(updatedStudent)
-            findNavController().popBackStack()
+            studentViewModel.updateStudent(updatedStudent) // обновление студента
+            findNavController().popBackStack() // возврат к предыдущему фрагменту
         }
     }
 
+    // метод для отображения диалога выбора даты
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
@@ -121,6 +127,7 @@ class EditStudentFragment : Fragment(R.layout.fragment_edit_student) {
     }
 
     companion object {
+        // метод для создания нового экземпляра фрагмента с заданным id студента
         fun newInstance(studentId: Long): EditStudentFragment {
             val args = Bundle().apply {
                 putLong("studentId", studentId)

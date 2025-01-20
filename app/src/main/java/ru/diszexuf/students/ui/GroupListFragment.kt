@@ -22,13 +22,14 @@ import ru.diszexuf.students.viewmodel.StudentViewModel
 @AndroidEntryPoint
 class GroupListFragment : Fragment(R.layout.fragment_group_list) {
 
-    private val groupViewModel: GroupViewModel by viewModels()
-    private val studentViewModel: StudentViewModel by viewModels()
-    private lateinit var groupAdapter: GroupAdapter
+    private val groupViewModel: GroupViewModel by viewModels() // viewmodel для работы с группами
+    private val studentViewModel: StudentViewModel by viewModels() // viewmodel для работы со студентами
+    private lateinit var groupAdapter: GroupAdapter // адаптер для recyclerview
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // инициализация recyclerview и адаптера
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewGroups)
         groupAdapter = GroupAdapter(
             onDeleteClick = { group -> showDeleteGroupDialog(group) },
@@ -37,22 +38,26 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
         recyclerView.adapter = groupAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // обработка нажатия на кнопку добавления группы
         val addGroupButton = view.findViewById<FloatingActionButton>(R.id.addGroupButton)
         addGroupButton.setOnClickListener {
             showAddGroupDialog()
         }
 
+        // наблюдение за изменениями в списке групп и обновление адаптера
         groupViewModel.groups.observe(viewLifecycleOwner) { groups ->
             groupAdapter.submitList(groups)
         }
     }
 
+    // метод для отображения диалога добавления группы
     private fun showAddGroupDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_group, null)
 
         val editTextGroupNumber = dialogView.findViewById<EditText>(R.id.editTextGroupNumber)
         val editTextFacultyName = dialogView.findViewById<EditText>(R.id.editTextFacultyName)
 
+        // фильтр для поля ввода названия факультета, разрешающий только буквы
         editTextFacultyName.filters = arrayOf(
             InputFilter { source, start, end, dest, dstart, dend ->
                 if (source.matches("[a-zA-Zа-яА-Я]+".toRegex())) {
@@ -83,6 +88,7 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
         dialog.show()
     }
 
+    // метод для отображения диалога удаления группы
     private fun showDeleteGroupDialog(group: Group) {
         studentViewModel.filterByGroup(group.id).observe(viewLifecycleOwner) { students ->
             if (students.isEmpty()) {
@@ -100,6 +106,7 @@ class GroupListFragment : Fragment(R.layout.fragment_group_list) {
         }
     }
 
+    // метод для навигации к фрагменту редактирования группы
     private fun navigateToEditGroupFragment(group: Group) {
         val action = GroupListFragmentDirections.actionGroupListFragmentToEditGroupFragment(group.id)
         findNavController().navigate(action)

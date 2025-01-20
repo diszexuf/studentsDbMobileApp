@@ -27,15 +27,16 @@ import ru.diszexuf.students.viewmodel.StudentViewModel
 @AndroidEntryPoint
 class StudentListFragment : Fragment(R.layout.fragment_student_list) {
 
-    private val studentViewModel: StudentViewModel by viewModels()
-    private lateinit var studentAdapter: StudentAdapter
-    private lateinit var groupAdapter: ArrayAdapter<String>
-    private lateinit var groupList: List<Group>
-    private var currentGroupId: Long = 0L
+    private val studentViewModel: StudentViewModel by viewModels() // viewmodel для работы со студентами
+    private lateinit var studentAdapter: StudentAdapter // адаптер для recyclerview
+    private lateinit var groupAdapter: ArrayAdapter<String> // адаптер для спиннера групп
+    private lateinit var groupList: List<Group> // список групп
+    private var currentGroupId: Long = 0L // текущий id группы для фильтрации
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // инициализация recyclerview и адаптера
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewStudents)
         studentAdapter = StudentAdapter(
             onDeleteClick = { student -> showDeleteStudentDialog(student) },
@@ -44,6 +45,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         recyclerView.adapter = studentAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // инициализация спиннера для фильтрации по группам
         val groupFilter = view.findViewById<Spinner>(R.id.groupFilter)
 
         studentViewModel.groups.observe(viewLifecycleOwner) { groups ->
@@ -74,11 +76,13 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             }
         }
 
+        // наблюдение за изменениями в списке студентов и обновление адаптера
         studentViewModel.students.observe(viewLifecycleOwner) { students ->
             Log.d("StudentListFragment", "All students: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
             studentAdapter.submitList(students)
         }
 
+        // инициализация поля поиска
         val searchField = view.findViewById<EditText>(R.id.searchField)
 
         searchField.filters = arrayOf(
@@ -110,13 +114,17 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             override fun afterTextChanged(editable: Editable?) {}
         })
 
+        // обработка нажатия на кнопку добавления студента
         val addStudentButton = view.findViewById<FloatingActionButton>(R.id.addStudentButton)
         addStudentButton.setOnClickListener {
             navigateToEditStudentFragment(0L)
         }
     }
 
+    // метод для обновления списка студентов в зависимости от текущей группы
     private fun updateStudentList() {
+        studentViewModel.students.removeObservers(viewLifecycleOwner)
+
         if (currentGroupId != 0L) {
             studentViewModel.filterByGroup(currentGroupId).observe(viewLifecycleOwner) { students ->
                 Log.d("StudentListFragment", "Filtered students by group: ${students.joinToString(", ") { it.firstName + " " + it.lastName }}")
@@ -130,6 +138,7 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
         }
     }
 
+    // метод для отображения диалога удаления студента
     private fun showDeleteStudentDialog(student: Student) {
         AlertDialog.Builder(requireContext())
             .setTitle("Удалить студента?")
@@ -141,12 +150,14 @@ class StudentListFragment : Fragment(R.layout.fragment_student_list) {
             .show()
     }
 
+    // метод для навигации к фрагменту редактирования студента
     private fun navigateToEditStudent(student: Student) {
         Log.d("StudentListFragment", "StudentID to edit ${student.id}")
         val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(student.id)
         findNavController().navigate(action)
     }
 
+    // метод для навигации к фрагменту редактирования студента с заданным id
     private fun navigateToEditStudentFragment(studentId: Long) {
         Log.d("StudentListFragment", "StudentID to edit ${studentId}")
         val action = StudentListFragmentDirections.actionStudentListFragmentToEditStudentFragment(studentId)
